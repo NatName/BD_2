@@ -9,7 +9,7 @@ class Additional(object):
         cursor.execute("""SELECT "{}Id" FROM public."{}" OFFSET floor(random()) LIMIT 1;"""
                        .format(tableName, tableName))
         value = cursor.fetchall()
-        return value[0][0] + 1
+        return value[0][0]
 
     @staticmethod
     def findExistingId(connection, tableName, anyId):
@@ -28,82 +28,45 @@ class Additional(object):
         return len(value) != 0
 
     @staticmethod
-    def isExistAllOptionCustomer(customer):
-        if 'name' and 'sex' and 'phone' not in customer:
-            return False
-        return True
-
-    @staticmethod
-    def updateCustomer(customer, older):
-        i = 0
-        options = ['name', 'phone', 'sex']
-        for key in options:
-            i += 1
-            if key not in customer:
-                customer[key] = older[0][i]
-        return customer
-
-    @staticmethod
-    def isExistAllOptionShop(shop):
-        if 'name' and 'street' not in shop:
-            return False
-        return True
-
-    @staticmethod
-    def updateShop(shop, older):
-        i = 0
-        options = ['name', 'street']
-        for key in options:
-            i += 1
-            if key not in shop:
-                shop[key] = older[0][i]
-        return shop
-
-    @staticmethod
-    def isExistAllOptionItem(items):
-        if 'name' and 'price' and 'quantity' and 'color' and 'material' not in items:
-            return False
-        return True
-
-    @staticmethod
-    def updateItem(items, older):
-        i = 0
-        options = ['name', 'price', 'quantity', 'color', 'material', 'description']
-        for key in options:
-            i += 1
-            if key not in items:
-                items[key] = older[0][i]
-        return items
-
-    @staticmethod
-    def findWordInText(connection, word):
+    def findWordInText(connection, words):
         cursor = connection.cursor()
-        cursor.execute("""SELECT * FROM public."Item" WHERE "ItemDescriptions" LIKE '%{}%';"""
-                       .format(word))
+        cursor.execute("""SELECT * FROM public."Item" WHERE to_tsvector("ItemDescriptions") @@ to_tsquery('{}');"""
+                       .format(words))
         value = cursor.fetchall()
         return value
 
     @staticmethod
-    def findRowBetweenNumbers(connection, first, second, name):
+    def findRowBetweenNumbers(connection, first, second):
         cursor = connection.cursor()
-        cursor.execute("""SELECT * FROM public."Order" INNER JOIN public."{}" ON "Order"."{}Id"="{}"."{}Id" WHERE  
-                        "OrderId" BETWEEN {} AND {} AND "{}"."{}Id" BETWEEN {} AND {};"""
-                       .format(name, name, name, name, first, second, name, name, first, second))
+        cursor.execute("""SELECT "OrderId", "CustomerId", "ShopId", "OrderDate", "Item"."ItemId",  "ItemQuantity" FROM public."Order" INNER JOIN public."Item" ON "Order"."ItemId"="Item"."ItemId" WHERE  
+                        "ItemQuantity" BETWEEN {} AND {};"""
+                       .format(first, second))
         value = cursor.fetchall()
         return value
 
     @staticmethod
-    def isExistAllOptionOrder(order):
-        if 'itemId' and 'shopId' and 'customerId' and 'date' not in order:
-            return False
-        return True
+    def findItemName(connection, name):
+        cursor = connection.cursor()
+        cursor.execute("""SELECT "OrderId", "CustomerId", "ShopId", "OrderDate", "Item"."ItemId",  "ItemName" FROM public."Order" INNER JOIN public."Item" ON "Order"."ItemId"="Item"."ItemId" WHERE  
+                        "ItemName" LIKE '{}';"""
+                       .format(name))
+        value = cursor.fetchall()
+        return value
 
     @staticmethod
-    def updateOrder(order, older):
+    def addLogicOperation(word):
+        word = word.strip().replace('and', '&').replace('or', '|')
+        desc = word.split(' ')
         i = 0
-        options = ['itemId', 'shopId', 'customerId', 'date']
-        for key in options:
+        filterStr = list(filter(lambda x: x != '' and x != 'or' and x != 'and', desc))
+        desc = ''
+        while i < len(filterStr) - 1:
+            if filterStr[i] == '|' or filterStr[i] == '&':
+                desc += filterStr[i] + ' '
+            elif filterStr[i+1] == '|' or filterStr[i+1] == '&':
+                desc += filterStr[i] + ' '
+            else:
+                desc += filterStr[i] + ' & '
             i += 1
-            if key not in order:
-                order[key] = older[0][i]
-        return order
+        desc += filterStr[i]
+        return desc

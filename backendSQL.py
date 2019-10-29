@@ -142,7 +142,7 @@ def insert_many_random_orders(connection, count, itemId, customerId, shopId):
             "INSERT INTO public.\"Order\"(\"CustomerId\", \"ItemId\", \"ShopId\", \"OrderDate\") select {}, {}, {}, "
             "date((current_date - '15 years'::interval) + trunc(random() * 365) * '1 day'::interval + "
             "trunc(random() * 14) * '1 year'::interval ) from generate_series(1, {})".format(
-                itemId, customerId, shopId, count))
+                customerId, itemId, shopId, count))
         connection.commit()
         cursor.close()
     except (Exception, psycopg2.Error) as err:

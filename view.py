@@ -3,11 +3,11 @@ class View(object):
     @staticmethod
     def show_list_shops(items):
         if items:
-            print("----------------SHOPS----------------")
+            print("----------------SHOPS------------------")
             print("|ShopId\t|", "ShopName     |", "ShopStreet   |")
             for row in items:
-                print("|", row[0], "\t|",  row[1], " " * (11 - len(row[1])), "|", row[2], " " * (11 - len(row[2])), "|")
-            print("----------------------------------------")
+                print("|", row[0], "\t|", row[1], " " * (11 - len(row[1])), "|", row[2], " " * (11 - len(row[2])), "|")
+            print("---------------------------------------")
         else:
             print("There is nothing with this id")
 
@@ -62,26 +62,23 @@ class View(object):
 
     @staticmethod
     def show_list_items(items, word):
+        if word:
+            word = word.split(' ')
+            filterWord = list(filter(lambda x: x != 'or' and x != '' and x != 'and', word))
         if items:
             print("------------------------------------ITEMS-----------------------------------------")
-            print("|ItemId\t|", "ItemName    |", "ItemPrice   |", "ItemQuantity  |", "ItemColor   |", "ItemMaterial  |",
+            print("|ItemId\t|", "ItemName    |", "ItemPrice   |", "ItemQuantity  |", "ItemColor   |",
+                  "ItemMaterial  |",
                   "ItemDescriptions      |")
             for row in items:
-                row = list(row)
                 if word:
-                    i = 0
-                    desc = row[6].split(word)
-                    row[6] = ""
-                    for selWord in desc:
-                        i += 1
-                        if i != len(desc):
-                            row[6] += selWord + "\033[93m" + word + "\033[0m"
-                        else:
-                            row[6] += selWord
+                    for rowWord in filterWord:
+                        row = list(row)
+                        row[6] = row[6].replace(rowWord, "\033[93m" + rowWord + "\033[0m")
                 print("|", row[0], "\t|", row[1], " " * (10 - len(row[1])), "|", row[2], "\t|", row[3],
                       "\t\t\t|", row[4], " " * (10 - len(row[4])), "|", row[5], " " * (12 - len(row[5])),
                       "|", row[6], "|")
-            print("----------------------------------------------------------------------------------")
+                print("----------------------------------------------------------------------------------")
         else:
             print("There is nothing with this id")
 
@@ -118,36 +115,34 @@ class View(object):
 
     @staticmethod
     def display_stored(name, tableName):
-        print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print('\033[92m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
         print('Hooray! You create new {} - {} to our {} list!'
               .format(tableName.lower(), name, tableName))
-        print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\033[0m')
 
     @staticmethod
     def display_many_stored(count, tableName):
-        print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print('\033[92m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
         print('Hooray! You create {} new {} in {} table!'
               .format(tableName.lower(), count, tableName))
-        print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\033[0m')
 
     @staticmethod
     def display_deletion(anyId, tableName):
-        print('--------------------------------------------------------------')
-        print('We have just removed {} with id:{} from table {}'.format(tableName.lower(), anyId, tableName))
-        print('--------------------------------------------------------------')
+        print('\033[92m--------------------------------------------------------------')
+        print('We have just removed {} with id:{} from table {}'
+              .format(tableName.lower(), anyId, tableName))
+        print(']--------------------------------------------------------------\033[0m')
 
     @staticmethod
-    def show_list_items_orders(items):
+    def show_list_items_orders(items, lastName):
         if items:
-            print("--------------------ORDERS+ITEMS------------------------")
-            print("|OrderId|", "CustomerId|", "ShopId|", "OrderDate  |", "ItemId   |", "ItemName    |",
-                  "ItemPrice   |", "ItemQuantity  |", "ItemColor   |", "ItemMaterial  |",
-                  "ItemDescriptions      |")
+            print("--------------------ORDERS+ITEMS---------------------------------")
+            print("|OrderId|", "CustomerId|", "ShopId|", "OrderDate  |", "ItemId   |", lastName)
             for row in items:
-                print("|", row[0], "\t|", row[1], "\t\t|", row[3],
-                      "\t|", row[4], "|", row[5], "\t\t|", row[6], " " * (10 - len(row[6])), "|", row[7], "\t|", row[8],
-                      "\t\t\t|", row[9], " " * (10 - len(row[9])), "|", row[10], " " * (12 - len(row[10])),
-                      "| ", row[11], "|")
-            print("--------------------------------------------------")
+                print("|", row[0], "\t|", row[1], "\t\t|", row[2],
+                      "\t|", row[3], "|", row[4], "\t\t|", row[5],
+                      "\t\t\t|")
+            print("-----------------------------------------------------------------")
         else:
             print("There is nothing with this id")
