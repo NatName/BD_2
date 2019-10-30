@@ -144,9 +144,9 @@ class ControllerItem(object):
         self.model.disconnect_from_db()
         self.view.delete_connection()
 
-    def show_items(self):
+    def show_items(self, value):
         word = Input.input_words()
-        items = self.model.read_items(word)
+        items = self.model.read_items(value, word)
         self.view.show_list_items(items, word)
 
     def show_item(self):

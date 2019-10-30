@@ -36,6 +36,14 @@ class Additional(object):
         return value
 
     @staticmethod
+    def findTextWithoutWord(connection, words):
+        cursor = connection.cursor()
+        cursor.execute("""SELECT * FROM public."Item" WHERE to_tsvector("ItemDescriptions") @@ to_tsquery('!{}');"""
+                       .format(words))
+        value = cursor.fetchall()
+        return value
+
+    @staticmethod
     def findRowBetweenNumbers(connection, first, second):
         cursor = connection.cursor()
         cursor.execute("""SELECT "OrderId", "CustomerId", "ShopId", "OrderDate", "Item"."ItemId",  "ItemQuantity" FROM public."Order" INNER JOIN public."Item" ON "Order"."ItemId"="Item"."ItemId" WHERE  
@@ -47,8 +55,9 @@ class Additional(object):
     @staticmethod
     def findItemName(connection, name):
         cursor = connection.cursor()
+        print(name)
         cursor.execute("""SELECT "OrderId", "CustomerId", "ShopId", "OrderDate", "Item"."ItemId",  "ItemName" FROM public."Order" INNER JOIN public."Item" ON "Order"."ItemId"="Item"."ItemId" WHERE  
-                        "ItemName" LIKE '{}';"""
+                        "ItemName" LIKE '%{}%';"""
                        .format(name))
         value = cursor.fetchall()
         return value

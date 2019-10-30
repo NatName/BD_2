@@ -38,11 +38,12 @@ def menu(item, customer, shop, order):
 
     # A FunctionItem runs a Python function when selected
     function_show_item = FunctionItem("Show item", item.show_item, [])
-    function_show_items = FunctionItem("Show items", item.show_items, [])
+    function_show_items = FunctionItem("Show items", item.show_items, [1])
     function_insert_item = FunctionItem("Add one item", item.insert_item, [newItem])
     function_insert_many_items = FunctionItem("Add many items", item.insert_many_items, [])
     function_update_item = FunctionItem("Update one item", item.update_item, [newItem])
     function_delete_item = FunctionItem("Delete one items", item.delete_item, [])
+    function_show_items_without_word = FunctionItem("Show items without word", item.show_items, [2])
 
     menu_items.append_item(function_show_item)
     menu_items.append_item(function_show_items)
@@ -50,6 +51,7 @@ def menu(item, customer, shop, order):
     menu_items.append_item(function_insert_item)
     menu_items.append_item(function_update_item)
     menu_items.append_item(function_delete_item)
+    menu_items.append_item(function_show_items_without_word)
 
     function_show_customer = FunctionItem("Show customer", customer.show_customer, [])
     function_show_customers = FunctionItem("Show customers", customer.show_customers, [])

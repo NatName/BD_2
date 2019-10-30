@@ -146,10 +146,12 @@ class ModelItem(Model):
     def create_many_items(self, count):
         baseData.insert_many_random_items(self.connection, count)
 
-    def read_items(self, word=None):
-        if word:
+    def read_items(self, value, word=None):
+        if word and value == 1:
             strWord = Additional.addLogicOperation(word)
             return Additional.findWordInText(self.connection, strWord)
+        elif value == 2:
+            return Additional.findTextWithoutWord(self.connection, word)
         return baseData.select_all(self.connection, self.tableName)
 
     def read_item(self, itemId):
